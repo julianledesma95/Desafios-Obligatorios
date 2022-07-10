@@ -3,11 +3,15 @@
 let numeroCuotas = 0;
 let precioProducto = 0;
 
-precioProducto = prompt("Ingrese el precio del producto seleccionado");1000
-numeroCuotas = prompt("Ingrese la cantidad de cuotas que desea");2
+function calcularInteres(cuotas, valor) {
+    interes = cuotas * 0.02;
+    return valor * interes;
+}
 
-let interesCuota = numeroCuotas * 0.02;
-let incremento = precioProducto * interesCuota;
+precioProducto = prompt("Ingrese el precio del producto seleccionado");
+numeroCuotas = prompt("Ingrese la cantidad de cuotas que desea");
+
+let incremento = calcularInteres(numeroCuotas, precioProducto);
 let valorFinal = parseFloat(precioProducto) + parseFloat(incremento);
 let valorCuota = valorFinal / numeroCuotas;
 
