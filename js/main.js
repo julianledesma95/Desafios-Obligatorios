@@ -1,10 +1,31 @@
 /* .................definición de variables y armado de cartas producto........................*/
 
+const datosStock = async () => {
+    let response = await fetch("js/stock.json")
+    let datosProductos = await response.json()
+    datosProductos.forEach(item => {
+        const div = document.createElement('div')
+        div.className = 'producto'
+        div.innerHTML = `<div class="card" id="${item.id}">
+                                    <img src="${item.img}" class="card-img-top" alt="producto1">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${item.producto}</h5>
+                                        <p class="card-desc">${item.desc}</p>
+                                        <p class="product-price">$${item.precio}</p>
+                                        <a href="#" class="add-to-cart">Agregar al Carrito</a>
+                                    </div>
+                                </div>
+                                `
+        contenedorProductos.appendChild(div)
+        cargarEventListeners();
+    })
+}
+
 let contenedorProductos = document.getElementById('contenedor-productos')
 const carrito = document.querySelector('#carrito');
 const listaCursos = document.querySelector('#contenedor-productos');
 const contenedorCarrito = document.querySelector('#lista-carrito tbody');
-const vaciarCarritoBtn = document.querySelector('#vaciar-carrito'); 
+const vaciarCarritoBtn = document.querySelector('#vaciar-carrito');
 const addToCart = document.getElementsByClassName("add-to-cart");
 const contadorCarrito = document.getElementById("contador-carrito");
 let carritoIds = [];
@@ -15,6 +36,7 @@ let precioTot = parseFloat(0);
 const filtrarCategoriaBtn = document.getElementById('category_list');
 let cat = "todos"
 
+datosStock()
 mostrarProductos(cat)
 cargarEventListeners();
 
@@ -23,7 +45,7 @@ cargarEventListeners();
 
 function cargarEventListeners() {
     // Dispara cuando se presiona "Agregar al Carrito"
-    for(let boton of addToCart){
+    for (let boton of addToCart) {
         boton.addEventListener("click", datosProducto)
     }
 
@@ -31,20 +53,20 @@ function cargarEventListeners() {
     vaciarCarritoBtn.addEventListener('click', vaciarCarrito);
 
     // Dispara cuando se presiona alguna categoría
-/*     filtrarCategoriaBtnVinos.addEventListener('click', cambiarCat(filtrarCategoriaBtnVinos)); */
+    /*     filtrarCategoriaBtnVinos.addEventListener('click', cambiarCat(filtrarCategoriaBtnVinos)); */
 
-} 
+}
 
 document.addEventListener("DOMContentLoaded", () => {
-    if (localStorage.getItem("carritoIds")){
+    if (localStorage.getItem("carritoIds")) {
         carritoIds = JSON.parse(localStorage.getItem("carritoIds"))
-        carritoIds.forEach( id => {
+        carritoIds.forEach(id => {
             let prod = buscarProductoPorId(id)
             let prodID = prod.id
             let prodName = prod.desc
             let prodPrice = prod.precio
             let prodImage = prod.img
-            agregarCarrito(prodID,prodName,prodPrice,prodImage)
+            agregarCarrito(prodID, prodName, prodPrice, prodImage)
         })
     }
 })
@@ -53,14 +75,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 /* Armar listado de productos en cartas */
 
-function buscarProductoPorId(id){
+function buscarProductoPorId(id) {
     let prod = stockProductos.find(prod => prod.id == id)
     return prod
 }
 
-
-function mostrarProductos(cat){
-    stockProductos.forEach(item =>{
+/* function mostrarProductos(cat) {
+    stockProductos.forEach(item => {
         const div = document.createElement('div')
         div.className = 'producto'
         div.innerHTML = `<div class="card" id="${item.id}">
@@ -75,11 +96,11 @@ function mostrarProductos(cat){
                         `
         contenedorProductos.appendChild(div)
     })
-}
+} */
 
 /* Recopilar datos de los productos en contenedor */
 
-function datosProducto(e){
+function datosProducto(e) {
     let boton = e.target;
     let producto = boton.parentElement.parentElement;
     let prodID = producto.getAttribute("id");
@@ -88,12 +109,12 @@ function datosProducto(e){
     let prodImage = producto.querySelector(".card-img-top").src;
     carritoIds.push(prodID)
     localStorage.setItem("carritoIds", JSON.stringify(carritoIds));
-    agregarCarrito(prodID,prodName,prodPrice,prodImage);
+    agregarCarrito(prodID, prodName, prodPrice, prodImage);
 }
 
 /* Agregar elementos al Carrito */
 
-function agregarCarrito(prodID,prodName,prodPrice,prodImage){
+function agregarCarrito(prodID, prodName, prodPrice, prodImage) {
     const row = document.createElement('tr');
     row.innerHTML = `
          <td>  
@@ -112,11 +133,11 @@ function agregarCarrito(prodID,prodName,prodPrice,prodImage){
     contenedorCarrito.appendChild(row);
 
     contadorCarrito.innerText = contenedorCarrito.childElementCount;
-    
+
     /* Agrego la función de borrar al a "X" de cada registro */
     let botonesBorrar = row.querySelectorAll(".borrar-producto");
-    for(let boton of botonesBorrar) {
-        boton.addEventListener("click", (e) => eliminarProducto(e,prodID));
+    for (let boton of botonesBorrar) {
+        boton.addEventListener("click", (e) => eliminarProducto(e, prodID));
     }
 }
 
@@ -143,8 +164,8 @@ function eliminarProducto(e, prodID) {
 /* Elimina todos los productos que se encuentren en el carrito */
 
 function vaciarCarrito() {
-    while(contenedorCarrito.firstChild) {
-         contenedorCarrito.removeChild(contenedorCarrito.firstChild);
+    while (contenedorCarrito.firstChild) {
+        contenedorCarrito.removeChild(contenedorCarrito.firstChild);
     }
     contadorCarrito.innerText = contenedorCarrito.childElementCount;
     carritoIds = [];
